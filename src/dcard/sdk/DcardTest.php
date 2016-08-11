@@ -1,6 +1,6 @@
 <?php
-	require "./HttpRequest.php";
-	require "./DcardSdk.php";
+	require "HttpRequest.php";
+	require "DcardSdk.php";
 	
 	use Dcard\sdk\HttpRequest;
 	use Dcard\sdk\DcardSdk;
@@ -8,18 +8,30 @@
 	class DcardTest extends PHPUnit_Framework_TestCase {
 		/** @test */
 		public function SdkTest() {
-			$DcardSdk = new DcardSdk();
+			$DcardSdk = new DcardSdk("your-account", "your-password");
 			
-			//login testing
+			//login testing (success)
 			$response = $this -> DcardLoginTest($DcardSdk);
+			
 			$response = json_decode($response, true);
 			
 			$this -> assertSame("login success", $response["success_description"]);
 			
+			//login testing (failed)
+			$DcardSdk = new DcardSdk("12345678", "12345678");
+			$response = $this -> DcardLoginTest($DcardSdk);
+			
+			$response = json_decode($response, true);
+			
+			$this -> assertSame("login failed", $response["error_description"]);
+			
+			$DcardSdk = new DcardSdk("your-account", "your-password");
+			
 			//logout testing
 			$response = $this -> DcardLogoutTest($DcardSdk);
+			$response = json_decode($response, true);
 			
-			$this -> assertSame(0, (int)strpos($response -> getBody() -> getContents(), "註冊"));
+			$this -> assertSame("success", $response["success"]);
 			
 			//forums testing
 			$response = $this -> GetForumsTest($DcardSdk);
@@ -33,7 +45,7 @@
 			$response = $this -> GetContentsTest($DcardSdk, $PostId);
 			$json = json_decode($response, true);
 			
-			$this -> assertSame($PostId, $json["id"]);
+			$this -> assertSame($PostId, (string)$json["id"]);
 			
 			//post not found testing
 			$PostId = "224506882ss";
@@ -111,24 +123,8 @@
 			
 			$this -> assertSame("message", $json["field"]);
 			
-			//get notification testing (no login)
-			$this -> DcardLogoutTest($DcardSdk);
-			$response = $this -> GetNotifyTest($DcardSdk);
-			$json = json_decode($response, true);
-			
-			$this -> assertSame(true, empty($json["error"]));
-			
 			//get notification testing (login)
-			$this -> DcardLoginTest($DcardSdk);
 			$response = $this -> GetNotifyTest($DcardSdk);
-			$json = json_decode($response, true);
-			
-			$this -> assertSame(false, empty($json["error"]));
-			$this -> DcardLogoutTest($DcardSdk);
-			
-			//get dcard testing (no login)
-			$this -> DcardLogoutTest($DcardSdk);
-			$response = $this -> GetDcardTest($DcardSdk);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame(true, empty($json["error"]));
@@ -138,13 +134,6 @@
 			$response = $this -> GetDcardTest($DcardSdk);
 			$json = json_decode($response, true);
 			
-			$this -> assertSame(false, empty($json["error"]));
-			
-			//get me testing (no login)
-			$this -> DcardLogoutTest($DcardSdk);
-			$response = $this -> GetMeTest($DcardSdk);
-			$json = json_decode($response, true);
-			
 			$this -> assertSame(true, empty($json["error"]));
 			
 			//get me testing (login)
@@ -152,17 +141,12 @@
 			$response = $this -> GetMeTest($DcardSdk);
 			$json = json_decode($response, true);
 			
-			$this -> assertSame(false, empty($json["error"]));
-			
-			
+			$this -> assertSame(true, empty($json["error"]));
 			
 		}
 		
 		public function DcardLoginTest($DcardSdk) {
-			$account = "your account";
-			$password = "your password";
-			
-			return $DcardSdk -> DcardLogin($account, $password);
+			return $DcardSdk -> DcardLogin();
 		}
 		
 		public function DcardLogoutTest($DcardSdk) {

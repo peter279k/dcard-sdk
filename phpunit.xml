@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<phpunit
+    colors="true"
+    bootstrap="./vendor/autoload.php"
+	type="coverage-html" target="report/" charset="UTF-8">
+	
+    <filter>
+		
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">./src/dcard/sdk/</directory>
+		</whitelist>
+	</filter>
+	
+</phpunit>

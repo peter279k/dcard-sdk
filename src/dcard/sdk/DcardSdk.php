@@ -3,13 +3,15 @@
 	
 	class DcardSdk {
 		
-		public function __construct() {
+		public function __construct($account, $password) {
 			$this -> data = array();
+			$this -> account = $account;
+			$this -> password = $password;
 		}
 		
-		public function DcardLogin($account, $password) {
-			$this -> data["account"] = $account;
-			$this -> data["password"] = $password;
+		public function DcardLogin() {
+			$this -> data["account"] = $this -> account;
+			$this -> data["password"] = $this -> password;
 			$this -> data["http_method"] = "POST";
 			$this -> data["request_url"] = "https://www.dcard.tw/_api/sessions";
 			
@@ -41,22 +43,13 @@
 		public function GetPostLists($ForumName, $IsPopular, $IsBefore, $PostId) {
 			$this -> data["http_method"] = "GET";
 			
-			$popular = null;
-			
 			$BefStr = "";
 			
 			if($IsBefore === true) {
 				$BefStr .= "&before=" . $PostId;
 			}
 			
-			if($IsPopular === true) {
-				$popular = true;
-			}
-			else {
-				$popular = false;
-			}
-			
-			$this -> data["request_url"] = "https://www.dcard.tw/_api/forums/" . $ForumName . "/posts?popular=" . $popular . $BefStr;
+			$this -> data["request_url"] = "https://www.dcard.tw/_api/forums/" . $ForumName . "/posts?popular=" . $IsPopular . $BefStr;
 			
 			return $this -> SendHttpRequest();
 		}
@@ -67,6 +60,10 @@
 			
 			$this -> data["request_url"] = "https://www.dcard.tw/_api/notifications";
 			
+			$this -> data["account"] = $this -> account;
+			
+			$this -> data["password"] = $this -> password;
+			
 			return $this -> SendHttpRequest();
 		}
 		
@@ -76,6 +73,10 @@
 			
 			$this -> data["request_url"] = "https://www.dcard.tw/_api/dcard";
 			
+			$this -> data["account"] = $this -> account;
+			
+			$this -> data["password"] = $this -> password;
+
 			return $this -> SendHttpRequest();
 		}
 		
@@ -85,11 +86,16 @@
 			
 			$this -> data["request_url"] = "https://www.dcard.tw/_api/me";
 			
+			$this -> data["account"] = $this -> account;
+			
+			$this -> data["password"] = $this -> password;
+			
 			return $this -> SendHttpRequest();
 		}
 		
 		private function SendHttpRequest() {
-			$response = HttpRequest::send($this -> data);
+			$request = new HttpRequest();
+			$response = $request -> send($this -> data);
 			
 			return $response;
 		}

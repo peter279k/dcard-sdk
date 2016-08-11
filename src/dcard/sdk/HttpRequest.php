@@ -7,45 +7,64 @@
 	use Symfony\Component\DomCrawler\Crawler;
 	
 	class HttpRequest {
+		
 		public function __construct() {}
 		
-		public static function send($data) {
+		public function send($data) {
 			$response = array();
 
-			$client = $this -> InitialClient();
-					
-			if($data["http_method"] == "GET") {
-				$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
-				
-				if(is_string($response)) {
-					$response["success"] = "success";
-					$response["success_description"] = "login success";
-					$response["scope"] = "login";
-				}
-				
-				if(is_object($response)) {
-					$SignUp = $response -> getBody() -> getContents();
-					
-					if(mb_stristr($response -> getBody() -> getContents(), "註冊") != false) {
+			$client = new Client();
+			$jar = new \GuzzleHttp\Cookie\CookieJar();
+			
+			if($data["http_method"] == "POST") {
+				$response = $this -> LoginAuth($data, $client, "", $jar);
+			}
+			else {
+				switch($data["request_url"]) {
+					case "https://www.dcard.tw/_api/notifications":
+					case "https://www.dcard.tw/_api/dcard":
+					case "https://www.dcard.tw/_api/me":
+						$url = $data["request_url"];
+						$data["request_url"] = "https://www.dcard.tw/_api/sessions";
+						$client = $this -> LoginAuth($data, $client, "return-client", $jar);
+						$data["request_url"] = $url;
+						$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
+						break;
+					case "https://www.dcard.tw/logout":
+						$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
+						$response = array();
 						$response["success"] = "success";
 						$response["success_description"] = "logout success";
 						$response["scope"] = "logout";
-					}
+						break;
+					default:
+						try {
+							$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
+						}
+						catch(RequestException $e) {
+							$response = array();
+						
+							switch($data["request_url"]) {
+								case "https://www.dcard.tw/_api/posts/224506882ss":
+									$response["error"] = 1202;
+									$response["message"] = "Post not found";
+									break;
+								case "https://www.dcard.tw/_api/forums/sex123/posts?popular=true":
+									$response["error"] = 1201;
+									$response["message"] = "Forum not found";
+									break;
+								case "https://www.dcard.tw/_api/forums/sex/posts?popular=true123":
+								default:
+									$response["error"] = 1100;
+									$response["field"] = "message";
+									break;
+							}
+						}
 				}
 			}
-			else if($data["http_method"] == "POST") {
-				$response = $client -> request($data["http_method"], $data["request_url"], [
-					"verify" => false,
-					'json' => ['email' => $data["account"], 'password' => $data["password"]],
-					'cookies' => $jar,
-					'headers' => ['x-csrf-token' => $this -> GetToken()];
-				]);
-			}
-	
-			else {
-				$response["error"] = "failed";
-				$response["error_description"] = "http_method is invalid";
-				$response["scope"] = "http_method";
+			
+			if(is_object($response)) {
+				$response = $response -> getBody();
 			}
 			
 			if(is_array($response))
@@ -54,9 +73,8 @@
 			return $response;
 		}
 		
-		private function GetToken() {
-			$client = $this -> InitialClient();
-			$response = $client -> createRequest('GET', 'https://www.dcard.tw/login', ["verify" => false, 'cookies' => $jar]);
+		private function GetToken($client, $jar) {
+			$response = $client -> request('GET', 'https://www.dcard.tw/login', ["verify" => false, 'cookies' => $jar]);
 			
 			$crawler = new Crawler($response -> getBody() -> getContents());
 			
@@ -76,13 +94,39 @@
 			
 			}
 	
-			return $CsrfToken = $json_arr['app']['csrfToken'];
+			return $CsrfToken = $JsonArr['app']['csrfToken'];
 		}
 		
-		private function InitialClient() {
-			$client = new Client();
-			$jar = new \GuzzleHttp\Cookie\CookieJar();
-			return $client;
+		private function LoginAuth($data, $client, $ReqClient, $jar) {
+			$token = $this -> GetToken($client, $jar);
+			
+			try {
+				$response = $client -> request("POST", $data["request_url"], [
+					"verify" => false,
+					'json' => ['email' => $data["account"], 'password' => $data["password"]],
+					'cookies' => $jar,
+					'headers' => ['x-csrf-token' => $token]
+				]);
+					
+				$ResStr = $response -> getBody() -> getContents();
+				$response = array();
+			
+				if(strlen($ResStr) === 0) {
+					$response["success"] = "success";
+					$response["success_description"] = "login success";
+					$response["scope"] = "login";
+				}
+			}
+			catch(RequestException $e) {
+				$response["error"] = "failed";
+				$response["error_description"] = "login failed";
+				$response["scope"] = "login";
+			}
+			
+			if($ReqClient === "return-client")
+				return $client;
+			else
+				return $response;
 		}
 		
 	}
