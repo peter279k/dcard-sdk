@@ -76,7 +76,7 @@
 				$response = json_encode($response);
 		}
 		
-		private function getToken($client, $jar) {
+		private function getToken(Client $client, $jar) {
 			$response = $client -> request('GET', 'https://www.dcard.tw/login', ["verify" => false, 'cookies' => $jar]);
 			
 			$crawler = new Crawler($response -> getBody() -> getContents());
