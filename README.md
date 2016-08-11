@@ -96,7 +96,7 @@ create the folder which name is report in project root folder.
 In DcardTest.php, replace the account and password on line 11 and 28.
 
 ##Step 7
-run testing: ```php php phpunit.phar src/dcard/sdk/DcardTest.php --coverage-html report/```
+run testing: ```php phpunit.phar src/dcard/sdk/DcardTest.php --coverage-html report/```
 
 Here is the testing result.
 
