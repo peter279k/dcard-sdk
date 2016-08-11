@@ -24,13 +24,18 @@ If you have to call other api methods, please open issue and let me know your re
 curl -sS https://getcomposer.org/installer | php
 
 //using composer.phar to install the dcard-sdk
-php composer.phar require 
+php composer.phar require dcard/sdk
+```
+
+# Sample code
+```php
+
 ```
 
 # Testing
 I use PHPUnit to test the package.
 
-Here is the sample code to test the package.
+Here is the steps to test the package.
 
 	Step 1: clone the project in master branch.
 	Step 2: manually download the PHPUnit.phar.
