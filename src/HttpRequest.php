@@ -100,7 +100,7 @@
 			return $JsonArr['app']['csrfToken'];
 		}
 		
-		private function loginAuth($data, $client, $ReqClient, $jar) {
+		private function loginAuth($data, Client $client, $ReqClient, $jar) {
 			$token = $this -> getToken($client, $jar);
 			
 			try {
