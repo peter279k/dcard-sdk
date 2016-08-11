@@ -32,7 +32,7 @@ php composer.phar require dcard/sdk
 
 ```
 
-# Testing
+# Unit Testing
 I use PHPUnit to test the package.
 
 Here is the steps to test the package.
