@@ -17,7 +17,7 @@
     "license": "MIT",
      "autoload": {
         "psr-4": {
-            "dcard\\sdk\\": "src/dcard/sdk"
+            "dcard\\sdk\\": ""
         }
     },
     "authors": [
