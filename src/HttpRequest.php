@@ -17,7 +17,7 @@
 			$jar = new \GuzzleHttp\Cookie\CookieJar();
 			
 			if($data["http_method"] == "POST") {
-				$response = $this -> LoginAuth($data, $client, "", $jar);
+				$response = $this -> loginAuth($data, $client, "", $jar);
 			}
 			else {
 				switch($data["request_url"]) {
@@ -26,7 +26,7 @@
 					case "https://www.dcard.tw/_api/me":
 						$url = $data["request_url"];
 						$data["request_url"] = "https://www.dcard.tw/_api/sessions";
-						$client = $this -> LoginAuth($data, $client, "return-client", $jar);
+						$client = $this -> loginAuth($data, $client, "return-client", $jar);
 						$data["request_url"] = $url;
 						$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
 						break;
@@ -63,17 +63,20 @@
 				}
 			}
 			
-			if(is_object($response)) {
-				$response = $response -> getBody();
-			}
-			
-			if(is_array($response))
-				$response = json_encode($response);
+			$response = $this -> handleRes($response);
 			
 			return $response;
 		}
 		
-		private function GetToken($client, $jar) {
+		private function handleRes($response) {
+			if(is_object($response))
+				$response = $response -> getBody();
+			
+			if(is_array($response))
+				$response = json_encode($response);
+		}
+		
+		private function getToken($client, $jar) {
 			$response = $client -> request('GET', 'https://www.dcard.tw/login', ["verify" => false, 'cookies' => $jar]);
 			
 			$crawler = new Crawler($response -> getBody() -> getContents());
@@ -94,11 +97,11 @@
 			
 			}
 	
-			return $CsrfToken = $JsonArr['app']['csrfToken'];
+			return $JsonArr['app']['csrfToken'];
 		}
 		
-		private function LoginAuth($data, $client, $ReqClient, $jar) {
-			$token = $this -> GetToken($client, $jar);
+		private function loginAuth($data, $client, $ReqClient, $jar) {
+			$token = $this -> getToken($client, $jar);
 			
 			try {
 				$response = $client -> request("POST", $data["request_url"], [

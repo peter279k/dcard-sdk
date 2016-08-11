@@ -2,16 +2,15 @@
 	require "HttpRequest.php";
 	require "DcardSdk.php";
 	
-	use Dcard\sdk\HttpRequest;
 	use Dcard\sdk\DcardSdk;
 	
 	class DcardTest extends PHPUnit_Framework_TestCase {
 		/** @test */
-		public function SdkTest() {
+		public function sdkTest() {
 			$DcardSdk = new DcardSdk("your-account", "your-password");
 			
 			//login testing (success)
-			$response = $this -> DcardLoginTest($DcardSdk);
+			$response = $this -> dcardLoginTest($DcardSdk);
 			
 			$response = json_decode($response, true);
 			
@@ -19,7 +18,7 @@
 			
 			//login testing (failed)
 			$DcardSdk = new DcardSdk("12345678", "12345678");
-			$response = $this -> DcardLoginTest($DcardSdk);
+			$response = $this -> dcardLoginTest($DcardSdk);
 			
 			$response = json_decode($response, true);
 			
@@ -28,13 +27,13 @@
 			$DcardSdk = new DcardSdk("your-account", "your-password");
 			
 			//logout testing
-			$response = $this -> DcardLogoutTest($DcardSdk);
+			$response = $this -> dcardLogoutTest($DcardSdk);
 			$response = json_decode($response, true);
 			
 			$this -> assertSame("success", $response["success"]);
 			
 			//forums testing
-			$response = $this -> GetForumsTest($DcardSdk);
+			$response = $this -> getForumsTest($DcardSdk);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame("marvel", $json[0]["alias"]);
@@ -42,7 +41,7 @@
 			//get contents testing
 			$PostId = "224506882";
 			
-			$response = $this -> GetContentsTest($DcardSdk, $PostId);
+			$response = $this -> getContentsTest($DcardSdk, $PostId);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame($PostId, (string)$json["id"]);
@@ -50,7 +49,7 @@
 			//post not found testing
 			$PostId = "224506882ss";
 			
-			$response = $this -> GetContentsTest($DcardSdk, $PostId);
+			$response = $this -> getContentsTest($DcardSdk, $PostId);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame("Post not found", $json["message"]);
@@ -61,7 +60,7 @@
 			$IsBefore = true;
 			$PostId = "224506286";
 			
-			$response = $this -> GetListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
+			$response = $this -> getListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame(0, count($json));
@@ -72,7 +71,7 @@
 			$IsBefore = false;
 			$PostId = "";
 			
-			$response = $this -> GetListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
+			$response = $this -> getListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame("西斯", $json[0]["forumName"]);
@@ -83,7 +82,7 @@
 			$IsBefore = true;
 			$PostId = "224506286";
 			
-			$response = $this -> GetListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
+			$response = $this -> getListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame("西斯", $json[0]["forumName"]);
@@ -94,7 +93,7 @@
 			$IsBefore = false;
 			$PostId = "";
 			
-			$response = $this -> GetListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
+			$response = $this -> getListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame("西斯", $json[0]["forumName"]);
@@ -106,7 +105,7 @@
 			$IsBefore = false;
 			$PostId = "";
 			
-			$response = $this -> GetListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
+			$response = $this -> getListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame("Forum not found", $json["message"]);
@@ -118,66 +117,66 @@
 			$IsBefore = false;
 			$PostId = "";
 			
-			$response = $this -> GetListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
+			$response = $this -> getListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame("message", $json["field"]);
 			
 			//get notification testing (login)
-			$response = $this -> GetNotifyTest($DcardSdk);
+			$response = $this -> getNotifyTest($DcardSdk);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame(true, empty($json["error"]));
 			
 			//get dcard testing (login)
-			$this -> DcardLoginTest($DcardSdk);
-			$response = $this -> GetDcardTest($DcardSdk);
+			$this -> dcardLoginTest($DcardSdk);
+			$response = $this -> getDcardTest($DcardSdk);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame(true, empty($json["error"]));
 			
 			//get me testing (login)
-			$this -> DcardLoginTest($DcardSdk);
-			$response = $this -> GetMeTest($DcardSdk);
+			$this -> dcardLoginTest($DcardSdk);
+			$response = $this -> getMeTest($DcardSdk);
 			$json = json_decode($response, true);
 			
 			$this -> assertSame(true, empty($json["error"]));
 			
 		}
 		
-		public function DcardLoginTest($DcardSdk) {
-			return $DcardSdk -> DcardLogin();
+		public function dcardLoginTest($DcardSdk) {
+			return $DcardSdk -> dcardLogin();
 		}
 		
-		public function DcardLogoutTest($DcardSdk) {
-			return $DcardSdk -> DcardLogout();
+		public function dcardLogoutTest($DcardSdk) {
+			return $DcardSdk -> dcardLogout();
 		}
 		
-		public function GetForumsTest($DcardSdk) {
-			return $DcardSdk -> GetForums();
+		public function getForumsTest($DcardSdk) {
+			return $DcardSdk -> getForums();
 		}
 		
-		public function GetContentsTest($DcardSdk, $PostId) {
-			return $DcardSdk -> GetPostContents($PostId);
+		public function getContentsTest($DcardSdk, $PostId) {
+			return $DcardSdk -> getPostContents($PostId);
 		}
 		
-		public function GetListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId) {
-			return $DcardSdk -> GetPostLists($ForumName, $IsPopular, $IsBefore, $PostId);
+		public function getListsTest($DcardSdk, $ForumName, $IsPopular, $IsBefore, $PostId) {
+			return $DcardSdk -> getPostLists($ForumName, $IsPopular, $IsBefore, $PostId);
 		}
 		
-		public function GetNotifyTest($DcardSdk) {
+		public function getNotifyTest($DcardSdk) {
 			//need login
-			return $DcardSdk -> GetNotification();
+			return $DcardSdk -> getNotification();
 		}
 		
-		public function GetDcardTest($DcardSdk) {
+		public function getDcardTest($DcardSdk) {
 			//neeed login
-			return $DcardSdk -> GetDcard();
+			return $DcardSdk -> getDcard();
 		}
 		
-		public function GetMeTest($DcardSdk) {
+		public function getMeTest($DcardSdk) {
 			//need login
-			return $DcardSdk -> GetMe();
+			return $DcardSdk -> getMe();
 		}
 		
 	}
