@@ -98,7 +98,7 @@ run testing: ```php php phpunit.phar src/dcard/sdk/DcardTest.php --coverage-html
 
 Here is the testing result.
 
-![Alt text](http://i.imgur.com/xed4w9Q.png)
+![Alt text](http://i.imgur.com/U8mO756.png)
 	
 # Related project
 Dcard-API is developed by Node.js: [https://github.com/Larry850806/Dcard-API](Dcard-API)
