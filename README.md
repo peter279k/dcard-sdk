@@ -75,13 +75,26 @@ I use PHPUnit to test the package.
 
 Here is the steps to test the package.
 
-	Step 1: clone the project in master branch.
-	Step 2: manually download the PHPUnit.phar.
-	Step 3: download the composer.phar.
-	Step 4: do ```php php composer.phar install ``` in project root folder.
-	Step 5: create the folder which name is report in project root folder.
-	Step 6: In DcardTest.php, replace the account and password on line 11 and 28.
-	Step 7: run testing: ```php php phpunit.phar src/dcard/sdk/DcardTest.php --coverage-html report/```
+##Step 1
+clone the project in master branch.
+
+##Step 2
+manually download the PHPUnit.phar.
+
+##Step 3
+download the composer.phar.
+
+##Step 4
+do ```php php composer.phar install ``` in project root folder.
+
+##Step 5
+create the folder which name is report in project root folder.
+
+##Step 6
+In DcardTest.php, replace the account and password on line 11 and 28.
+
+##Step 7
+run testing: ```php php phpunit.phar src/dcard/sdk/DcardTest.php --coverage-html report/```
 
 Here is the testing result.
 
