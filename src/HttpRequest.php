@@ -74,6 +74,8 @@
 			
 			if(is_array($response))
 				$response = json_encode($response);
+			
+			return $response;
 		}
 		
 		private function getToken(Client $client, $jar) {
