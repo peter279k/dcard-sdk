@@ -87,7 +87,7 @@ manually download the PHPUnit.phar.
 download the composer.phar.
 
 ##Step 4
-do ```php php composer.phar install ``` in project root folder.
+do ```php composer.phar install ``` in project root folder.
 
 ##Step 5
 create the folder which name is report in project root folder.
