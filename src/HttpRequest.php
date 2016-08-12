@@ -3,64 +3,28 @@
 	
 	use GuzzleHttp\Client;
 	use GuzzleHttp\Exception\RequestException;
+	use GuzzleHttp\Cookie\CookieJar;
 	
 	use Symfony\Component\DomCrawler\Crawler;
 	
 	class HttpRequest {
 		
-		public function __construct() {}
+		public function __construct() {
+			
+		}
 		
 		public function send($data) {
 			$response = array();
 
 			$client = new Client();
-			$jar = new \GuzzleHttp\Cookie\CookieJar();
+			$jar = new CookieJar();
 			
-			if($data["http_method"] == "POST") {
-				$response = $this -> loginAuth($data, $client, "", $jar);
+			if($data["http_method"] === "POST") {
+				$response = $this -> handlePost($data, $client, $jar);
 			}
+
 			else {
-				switch($data["request_url"]) {
-					case "https://www.dcard.tw/_api/notifications":
-					case "https://www.dcard.tw/_api/dcard":
-					case "https://www.dcard.tw/_api/me":
-						$url = $data["request_url"];
-						$data["request_url"] = "https://www.dcard.tw/_api/sessions";
-						$client = $this -> loginAuth($data, $client, "return-client", $jar);
-						$data["request_url"] = $url;
-						$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
-						break;
-					case "https://www.dcard.tw/logout":
-						$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
-						$response = array();
-						$response["success"] = "success";
-						$response["success_description"] = "logout success";
-						$response["scope"] = "logout";
-						break;
-					default:
-						try {
-							$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
-						}
-						catch(RequestException $e) {
-							$response = array();
-						
-							switch($data["request_url"]) {
-								case "https://www.dcard.tw/_api/posts/224506882ss":
-									$response["error"] = 1202;
-									$response["message"] = "Post not found";
-									break;
-								case "https://www.dcard.tw/_api/forums/sex123/posts?popular=true":
-									$response["error"] = 1201;
-									$response["message"] = "Forum not found";
-									break;
-								case "https://www.dcard.tw/_api/forums/sex/posts?popular=true123":
-								default:
-									$response["error"] = 1100;
-									$response["field"] = "message";
-									break;
-							}
-						}
-				}
+				$response = $this -> handleCond($data, $client, $jar);
 			}
 			
 			$response = $this -> handleRes($response);
@@ -78,8 +42,68 @@
 			return $response;
 		}
 		
-		private function getToken(Client $client, $jar) {
-			$response = $client -> request('GET', 'https://www.dcard.tw/login', ["verify" => false, 'cookies' => $jar]);
+		private function handlePost($data, Client $client, CookieJar $jar) {
+			$response = $this -> loginAuth($data, $client, "", $jar);
+				
+			if($data["request_url"] === "https://www.dcard.tw/_api/dcard/accept") {
+				$response = $this -> sendAccept($data, $client, $jar);
+			}
+			
+			return $response;
+		}
+		
+		private function handleGet($data, Client $client, CookieJar $jar) {
+			$objArr = $this -> preLogin($data, $client, $jar);
+			
+			$data = $objArr[0];
+			$client = $objArr[1];
+			$jar = $objArr[2];
+			
+			$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
+			return $response;
+		}
+		
+		private function handleDefault($data, Client $client, CookieJar $jar) {
+			try {
+				$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
+			}
+			catch(RequestException $e) {
+				$response = $e -> getResponse();
+			}
+			
+			return $response;
+		}
+		
+		private function handleCond($data, Client $client, CookieJar $jar) {
+			switch($data["request_url"]) {
+				//need to login
+				
+				case "https://www.dcard.tw/_api/notifications":
+				case "https://www.dcard.tw/_api/dcard":
+				case "https://www.dcard.tw/_api/me":
+					$response = $this -> handleGet($data, $client, $jar);
+					break;
+				case "https://www.dcard.tw/logout":
+					$response = $this -> logout($data, $client, $jar);
+					break;
+				default:
+					$response = $this -> handleDefault($data, $client, $jar);
+			}
+			
+			return $response;
+		}
+		
+		private function logout($data, Client $client, CookieJar $jar) {
+			$response = $client -> request($data["http_method"], $data["request_url"], ["verify" => false, 'cookies' => $jar]);
+			$response = array();
+			$response["success"] = "success";
+			$response["success_description"] = "logout success";
+			$response["scope"] = "logout";
+			return $response;
+		}
+		
+		private function getToken($ReqUrl, Client $client, CookieJar $jar) {
+			$response = $client -> request('GET', $ReqUrl, ["verify" => false, 'cookies' => $jar]);
 			
 			$crawler = new Crawler($response -> getBody() -> getContents());
 			
@@ -102,8 +126,8 @@
 			return $JsonArr['app']['csrfToken'];
 		}
 		
-		private function loginAuth($data, Client $client, $ReqClient, $jar) {
-			$token = $this -> getToken($client, $jar);
+		private function loginAuth($data, Client $client, $ReqClient, CookieJar $jar) {
+			$token = $this -> getToken('https://www.dcard.tw/login', $client, $jar);
 			
 			try {
 				$response = $client -> request("POST", $data["request_url"], [
@@ -132,6 +156,34 @@
 				return $client;
 			else
 				return $response;
+		}
+		
+		private function sendAccept($data, Client $client, CookieJar $jar) {
+			$objArr = $this -> preLogin($data, $client, $jar);
+			
+			$data = $objArr[0];
+			$client = $objArr[1];
+			$jar = $objArr[2];
+			
+			$token = $this -> getToken('https://www.dcard.tw/dcard', $client, $jar);
+			
+			$response = $client -> request("POST", $data["request_url"], [
+				"verify" => false,
+				'json' => ['firstMessage' => $data['message']],
+				'cookies' => $jar,
+				'headers' => ['x-csrf-token' => $token]
+			]);
+			
+			return $response;
+		}
+		
+		private function preLogin($data, Client $client, CookieJar $jar) {
+			$url = $data["request_url"];
+			$data["request_url"] = "https://www.dcard.tw/_api/sessions";
+			$client = $this -> loginAuth($data, $client, "return-client", $jar);
+			$data["request_url"] = $url;
+			
+			return array($data, $client, $jar);
 		}
 		
 	}

@@ -17,6 +17,7 @@ The base url is https://www.dcard.tw/
 | /_api/posts/{post-id} | get specified post contents  | GET | json | getPostContents |
 | /_api/forums/posts?popular={true/false}&before={post-id} | get specified forums's post lists  | GET | json | getPostLists |
 | /_api/sessions | To login the Dcard Account | POST | json | dcardLogin |
+| /_api/dcard/accept | Invite friends | POST | json | sendAccept |
 | /logout | logout from the Dcard | GET | json | dcardLogout |
 
 If you have to call other api methods, please open issue and let me know your requirement
@@ -40,22 +41,32 @@ use Dcard\sdk\DcardSdk;
 $dcard = new DcardSdk("your account", "your password");
 
 //login
+
 $response = $dcard -> dcardLogin();
 
 //get me
+
 $response = $dcard -> getMe();
 
 //get forums
+
 $response = $dcard -> getForums();
 
 //get "dcard"
+
 $response = $dcard -> getDcard();
 
 //get your account notifications
+
 $response = $dcard -> getNotification();
 
 //get specified post
+
 $response = $dcard -> getPostContents("your-post-id");
+
+//invite friends
+
+$response = $dcard -> sendAccept("your-first-message");
 
 //get specified forum's post lists
 /*
@@ -65,9 +76,11 @@ $response = $dcard -> getPostContents("your-post-id");
 	@param(type: string) $PostId: the $IsBefore set true and the specified post id will get specified page.
 	the $IsBefore set false and the specified post id will get specified page.
 */
+
 $response = $dcard -> getPostLists($ForumName, $IsPopular, $IsBefore, $PostId);
 
 //Dcard logout
+
 $response = $dcard -> dcardLogout();
 
 ```

@@ -56,6 +56,7 @@
 		
 		public function getNotification() {
 			//need to login and have cookies
+			
 			$this -> data["http_method"] = "GET";
 			
 			$this -> data["request_url"] = "https://www.dcard.tw/_api/notifications";
@@ -69,6 +70,7 @@
 		
 		public function getDcard() {
 			//need to login and have cookie
+			
 			$this -> data["http_method"] = "GET";
 			
 			$this -> data["request_url"] = "https://www.dcard.tw/_api/dcard";
@@ -82,6 +84,7 @@
 		
 		public function getMe() {
 			//need to login and have cookie
+			
 			$this -> data["http_method"] = "GET";
 			
 			$this -> data["request_url"] = "https://www.dcard.tw/_api/me";
@@ -89,6 +92,20 @@
 			$this -> data["account"] = $this -> account;
 			
 			$this -> data["password"] = $this -> password;
+			
+			return $this -> sendHttpRequest();
+		}
+		
+		public function sendAccept($message) {
+			$this -> data["http_method"] = "POST";
+			
+			$this -> data["request_url"] = "https://www.dcard.tw/_api/dcard/accept";
+			
+			$this -> data["account"] = $this -> account;
+			
+			$this -> data["password"] = $this -> password;
+			
+			$this -> data["message"] = $message;
 			
 			return $this -> sendHttpRequest();
 		}
