@@ -90,30 +90,34 @@ I use PHPUnit to test the package.
 
 Here is the steps to test the package.
 
-##Step 1
+## Step 1
 clone the project in master branch.
 
-##Step 2
+## Step 2
 manually download the PHPUnit.phar.
 
-##Step 3
+## Step 3
 download the composer.phar.
 
-##Step 4
+## Step 4
 do ```php composer.phar install ``` in project root folder.
 
-##Step 5
+## Step 5
 create the folder which name is report in project root folder.
 
-##Step 6
+## Step 6
 In DcardTest.php, replace the account and password on line 11 and 28.
 
-##Step 7
+## Step 7
 run testing: ```php phpunit.phar src/dcard/sdk/DcardTest.php --coverage-html report/```
 
 Here is the testing result.
 
-![Alt text](http://i.imgur.com/U8mO756.png)
+![Alt text](http://i.imgur.com/QmIw3Ew.png)
+
+# Change log
+## 2016/08/13
+1. add invite friend 新增寄送邀請功能
 	
 # Related project
 Dcard-API is developed by Node.js: [https://github.com/Larry850806/Dcard-API](Dcard-API)
