@@ -125,4 +125,4 @@ Here is the testing result.
 1. add invite friend 新增寄送邀請功能
 	
 # Related project
-Dcard-API is developed by Node.js: [https://github.com/Larry850806/Dcard-API](Dcard-API)
+Dcard-API is developed by Node.js: [Dcard-API](https://github.com/Larry850806/Dcard-API)
