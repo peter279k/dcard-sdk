@@ -3,7 +3,7 @@
     "description": "It's unofficial Dcard sdk to access Dcard HTTP api",
     "type": "sdk",
     "require": {
-        "guzzlehttp/guzzle": "^6.2",
+        "guzzlehttp/guzzle": "^7.4",
 		"symfony/dom-crawler": "^3.1",
 		"symfony/css-selector": "^3.1"
     },
