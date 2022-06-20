@@ -6,8 +6,6 @@ Help you to access easily the internal and official HTTP Dcard api.
 [![Latest Unstable Version](https://poser.pugx.org/dcard/sdk/v/unstable)](https://packagist.org/packages/dcard/sdk)
 [![License](https://poser.pugx.org/dcard/sdk/license)](https://packagist.org/packages/dcard/sdk)
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/e15c18a2-6ae4-44d0-ab03-81b810f43768/big.png)](https://insight.sensiolabs.com/projects/e15c18a2-6ae4-44d0-ab03-81b810f43768)
-
 # Dcard HTTP API implementation
 We implement the following API methods
 
